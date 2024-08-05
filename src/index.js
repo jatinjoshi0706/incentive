@@ -130,6 +130,7 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
   salesExcelDataSheet.forEach((item) => {
     let numberCheck = 0;
     let Discount = 0;
+    let gna = 0;
     let ComplaintCheck = 0;
     let EWCheck = 0;
     let EWPCheck = 0;
@@ -141,6 +142,7 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
     let MSSFcheck = 0;
     let autoCardCheck = 0;
     let obj = {};
+
     let MSRcheck = 0;
 
     let carObj = {
@@ -170,8 +172,8 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
     }
     const DSE_NoOfSoldCarExcelDataArr = Object.values(item)[0];
 
-    console.log("DSE_NoOfSoldCarExcelDataArr")
-    console.log(DSE_NoOfSoldCarExcelDataArr)
+    // console.log("DSE_NoOfSoldCarExcelDataArr")
+    // console.log(DSE_NoOfSoldCarExcelDataArr)
     // check OLD / NEW DSE
     let empStatus = true;
     // console.log(employeeStatusDataSheet)
@@ -199,7 +201,7 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
       "EarlyBird Incentive": 0,
       "GNA Incentive": 0,
       "Super Car Incentive Qualification": 0,
-      // TotalModelIncentive: 0,
+      TotalModelIncentive: 0,
       "PerModel Incentive": 0,
       "SpecialCar Incentive": 0,
       "Vehicle Incentive": 0,
@@ -228,32 +230,37 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
         if (parseInt(sold["final discount"]) > 0) {
           Discount += parseInt(sold["final discount"]);
         }
+        console.log("gna ::::",sold['gna'])
+        if (parseInt(sold["gna"]) > 0) {
+          gna += parseInt(sold["gna"]);
+        }
         carObj[sold["model name"]]++;
         if (parseInt(sold["final discount"]) > 0) {
           DiscountCount++;
         }
-        if (parseInt(sold["CCP PLUS"]) > 0) {
+        if (parseInt(sold["ccp plus"]) > 0) {
           CCPcheck++;
         }
-        if (sold["Financer REMARK"] == "MSSF") {
+        if (sold["financer remark"] == "MSSF") {
           MSSFcheck++;
         }
         if (parseInt(sold["extended warranty"]) > 0) {
           EWPCheck++;
         }
         if (
-          sold["Exchange Status"] == "YES" ||
-          sold["Exchange Status"] == "yes"
-        ) {
+          sold["exchange status"] == "YES" ||
+          sold["exchange status"] == "yes" ||
+        sold["exchange status"] > 0) {
           ExchangeStatusCheck++;
         }
         if (
-          sold["Complaint Status"] == "YES" ||
-          sold["Complaint Status"] == "yes"
+          sold["complaint status"] == "YES" ||
+          sold["complaint status"] == "yes" ||
+          sold["complaint status"] > 0
         ) {
           ComplaintCheck++;
         }
-        if (sold["autocard"] == "YES" || sold["autocard"] == "yes") {
+        if (sold["autocard"] == "YES" || sold["autocard"] == "yes" || sold["autocard"] > 0) {
           MSRcheck++;
         }
         TotalNumberCheck++;
@@ -262,7 +269,7 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
           numberCheck++;
         }
         if (formData.QC.autoCard == "yes") {
-          if (sold["autocard"] == "YES") {
+          if (sold["autocard"] == "YES" || sold["autocard"] > 0) {
             autoCardCheck++;
           }
         }
@@ -336,7 +343,7 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
             DSE_NoOfSoldCarExcelDataArr[0]["dse id"]
           );
           if (result) {
-            MGAAmountForQC = result["MGA/VEH"];
+            MGAAmountForQC = result["mga/veh"];
             if (MGAAmountForQC >= formData.QC.MGAAmount) MGAFlag = true;
             else {
               MGAFlag = false;
@@ -388,6 +395,7 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
             "Focus Model Qualification": "YES",
             Discount: Discount > 0 ? Discount : 0,
             "AVG. Discount": Discount > 0 ? Discount / TotalNumberCheck : 0,
+            gna: gna > 0 ? gna : 0,
             "Exchange Status": ExchangeStatusCheck,
             Complaints: ComplaintCheck,
             "EW Penetration": (EWPCheck / TotalNumberCheck) * 100,
@@ -412,6 +420,7 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
           "Focus Model Qualification": "NO",
           Discount: Discount > 0 ? Discount : 0,
           "AVG. Discount": Discount > 0 ? Discount / TotalNumberCheck : 0,
+          gna: gna > 0 ? gna : 0,
           "Exchange Status": ExchangeStatusCheck,
           Complaints: ComplaintCheck,
           "EW Penetration": (EWPCheck / TotalNumberCheck) * 100,
@@ -435,6 +444,9 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
         if (parseInt(sold["final discount"]) > 0) {
           Discount += parseInt(sold["final discount"]);
         }
+        if (parseInt(sold["gna"]) > 0) {
+          gna += parseInt(sold["gna"]);
+        }
         carObj[sold["model name"]]++;
 
         if (parseInt(sold["final discount"]) > 0) {
@@ -443,21 +455,21 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
         if (parseInt(sold["ccp plus"]) > 0) {
           CCPcheck++;
         }
-        if (sold["Financer REMARK"] == "MSSF") {
+        if (sold["financer remark"] == "MSSF") {
           MSSFcheck++;
         }
         if (parseInt(sold["extended warranty"]) > 0) {
           EWPCheck++;
         }
         if (
-          sold["Exchange Status"] == "YES" ||
-          sold["Exchange Status"] == "yes"
+          sold["exchange status"] == "YES" ||
+          sold["exchange status"] == "yes"
         ) {
           ExchangeStatusCheck++;
         }
         if (
-          sold["Complaint Status"] == "YES" ||
-          sold["Complaint Status"] == "yes"
+          sold["complaint status"] == "YES" ||
+          sold["complaint status"] == "yes"
         ) {
           ComplaintCheck++;
         }
@@ -473,6 +485,7 @@ const checkQualifingCondition = (formData, employeeStatusDataSheet) => {
         "Focus Model Qualification": "NO",
         Discount: Discount > 0 ? Discount : 0,
         "AVG. Discount": Discount > 0 ? Discount / TotalNumberCheck : 0,
+        gna: gna > 0 ? gna : 0,
         "Exchange Status": ExchangeStatusCheck,
         Complaints: ComplaintCheck,
         "EW Penetration": (EWPCheck / TotalNumberCheck) * 100,
@@ -513,7 +526,7 @@ ipcMain.on("form-submit", (event, formData) => {
 
   if (formData.QC.numOfCars !== "" && formData.QC.focusModel.length !== 0) {
     if (!KeyMissing) {
-      // console.log("formData", formData);
+      console.log("formData", formData);
 
       // Calling Function to Check Qualification and Calculate eacch incentive of DSE
 
@@ -560,7 +573,7 @@ ipcMain.on("form-submit", (event, formData) => {
 
       // Final Object
       let finalExcelobjOldDSE = [];
-      console.log("qualifiedRM", qualifiedRM)
+      // console.log("qualifiedRM", qualifiedRM)
       // Pushing qualified OLD DSE objects to Final Object
       qualifiedRM.forEach((item) => {
         // if (item["Super Car Incentive"] === 'NaN') {
@@ -569,18 +582,21 @@ ipcMain.on("form-submit", (event, formData) => {
         const grandTotal =
           getIncentiveValue(item, "Total Vehicle Incentive Amt. Slabwise") +
           getIncentiveValue(item, "Total Productivity Car Incentive") +
-          // getIncentiveValue(item, "SpecialCar Incentive") +
+          getIncentiveValue(item, "SpecialCar Incentive") +
           getIncentiveValue(item, "CDI Incentive") +
           getIncentiveValue(item, "EW Incentive") +
           getIncentiveValue(item, "CCP Incentive") +
           getIncentiveValue(item, "MSSF Incentive") +
           getIncentiveValue(item, "MSR Incentive") +
+          getIncentiveValue(item,"Total Productivity Car Incentive")+
+          getIncentiveValue(item,"GNA Incentive")+
           // getIncentiveValue(item, "Discount Incentive") +
           getIncentiveValue(item, "Exchange Incentive") +
           // getIncentiveValue(item, "Vehicle Incentive")
           getIncentiveValue(item, "Complaint Deduction") +
           getIncentiveValue(item, "Super Car Incentive") +
           getIncentiveValue(item, "MGA Incentive");
+
         getIncentiveValue(item, "TotalModelIncentive");
         obj = {
           "DSE ID": item["DSE ID"],
@@ -618,7 +634,7 @@ ipcMain.on("form-submit", (event, formData) => {
           "Model Incentive": getIncentiveValue(item, "TotalModelIncentive"),
           "Total Vehicle Incentive": (parseInt(item["Total PerCar Incentive"]) + parseInt(item["SpecialCar Incentive"]) + parseInt(item["TotalModelIncentive"]))? parseInt(item["Total PerCar Incentive"]) + parseInt(item["SpecialCar Incentive"]) + parseInt(item["TotalModelIncentive"]): 0,
           "EarlyBird Incentive": getIncentiveValue(item, "earlybird incentive"),
-          "GNA Incentive": item["GNA Incentive"],
+          // "GNA Incentive": item["GNA Incentive"],
           "Total Productivity Car Incentive": getIncentiveValue(
             item,
             "Total Productivity Car Incentive"
@@ -648,9 +664,18 @@ ipcMain.on("form-submit", (event, formData) => {
           "AVG. Discount": item["AVG. Discount"]
             ? Math.round(item["AVG. Discount"])
             : 0,
+
+            //discount
           "Vehicle Incentive % Slabwise": item["Vehicle Incentive % Slabwise"],
           "Total Vehicle Incentive Amt. Slabwise":
             item["Total Vehicle Incentive Amt. Slabwise"],
+//GNA
+"Total GNA": item["gna"],
+            "Vehicle Incentive GNA % Slabwise GNA ": item["Vehicle Incentive % Slabwise GNA"],
+          "Total Vehicle Incentive Amt. GNA Slabwise GNA":
+            item["Total Vehicle Incentive Amt. Slabwise GNA"],
+
+
           "MSSF Score": Math.round(item["MSSF"]),
           "MSSF Incentive": item["MSSF Incentive"],
           "MSR Score": Math.round(item["MSR"]),
@@ -706,7 +731,7 @@ ipcMain.on("form-submit", (event, formData) => {
           "Total Vehicle Incentive":
             item["Total PerCar Incentive"] + item["Special Car Incentive"],
           "EarlyBird Incentive": item["EarlyBird Incentive"],
-          "GNA Incentive": item["GNA Incentive"],
+          // // "GNA Incentive": item["GNA Incentive"],
           "Total Productivity Car Incentive": getIncentiveValue(
             item,
             "Total Productivity Car Incentive"
@@ -737,9 +762,14 @@ ipcMain.on("form-submit", (event, formData) => {
           "AVG. Discount": item["AVG. Discount"]
             ? Math.round(item["AVG. Discount"])
             : 0,
+            //discount
           "Vehicle Incentive % Slabwise": item["Vehicle Incentive % Slabwise"],
           "Total Vehicle Incentive Amt. Slabwise":
             item["Total Vehicle Incentive Amt. Slabwise"],
+            //GNA
+            "Vehicle Incentive GNA % Slabwise GNA ": item["Vehicle Incentive % Slabwise GNA"],
+          "Total Vehicle Incentive Amt. GNA Slabwise GNA":
+            item["Total Vehicle Incentive Amt. Slabwise GNA"],
           "MSSF Score": Math.round(item["MSSF"]),
           "MSSF Incentive": item["MSSF Incentive"],
           "MSR Score": Math.round(item["MSR"]),
@@ -803,7 +833,7 @@ ipcMain.on("form-submit", (event, formData) => {
           // "Model Incentive": item["TotalModelIncentive"],
           "Total Vehicle Incentive": item["Vehicle Incentive"],
           "EarlyBird Incentive": item["EarlyBird Incentive"],
-          "GNA Incentive": item["GNA Incentive"],
+          // "GNA Incentive": item["GNA Incentive"],
           "Total Productivity Car Incentive": getIncentiveValue(
             item,
             "Total Productivity Car Incentive"
@@ -834,9 +864,15 @@ ipcMain.on("form-submit", (event, formData) => {
           "AVG. Discount": item["AVG. Discount"]
             ? Math.round(item["AVG. Discount"])
             : 0,
+            //discount
           "Vehicle Incentive % Slabwise": item["Vehicle Incentive % Slabwise"],
           "Total Vehicle Incentive Amt. Slabwise":
             item["Total Vehicle Incentive Amt. Slabwise"],
+
+            //GNA 
+            "Vehicle Incentive GNA % Slabwise GNA ": item["Vehicle Incentive % Slabwise GNA"],
+          "Total Vehicle Incentive Amt. GNA Slabwise GNA":
+            item["Total Vehicle Incentive Amt. Slabwise GNA"],
           "MSSF Score": Math.round(item["MSSF"]),
           "MSSF Incentive": item["MSSF Incentive"],
           "MSR Score": Math.round(item["MSR"]),

@@ -1,36 +1,39 @@
-module.exports = (qualifiedRM, formData, salesExcelDataSheet) => {
-  qualifiedRM.forEach((element) => {
-    //Setting default incentive to 0
-    element["GNA Incentive"] = 0;
-    let userID = element["DSE ID"];
-    // let userDate = element["Delivery Date"];
-    if (formData.GNAIncentive.length !== 0) {
-      salesExcelDataSheet.forEach((data) => {
-        if (data.hasOwnProperty(userID)) {
-          data[userID].forEach((record) => {
-            let userGNA = parseInt(record["gna"]);
-            for (const range of formData["GNAIncentive"]) {
-              if (range.max === null) {
-                if (userGNA >= range.min) {
-                  element["GNA Incentive"] =
-                    element["GNA Incentive"] +
-                    (range.incentive * userGNA) / 100;
-                  break;
-                }
-              } else {
-                if (userGNA >= range.min && userGNA <= range.max) {
-                  element["GNA Incentive"] =
-                    element["GNA Incentive"] +
-                    (range.incentive * userGNA) / 100;
-                  break;
-                }
-              }
-            }
-          });
-        }
-      });
-    }
-  });
 
+module.exports = (qualifiedRM, formData) => {
+  qualifiedRM.forEach(element => {
+
+
+      element["Vehicle Incentive % Slabwise GNA"] = 0;
+      element["Total Vehicle Incentive Amt. Slabwise GNA"] = 0;
+      let userValue = element["gna"];
+     console.log(element["dse id"],"::::",userValue)
+
+// Summing up all types of Vehicle Incentive 
+      const TotalVehicleIncentive = element["Total PerCar Incentive"] + element['SpecialCar Incentive'] + element["TotalModelIncentive"];
+
+
+//Loop to check if Discount of DSE falls in the range of Discount Slab inputs given by user and calculate its incentive 
+
+
+      for (const incentive of formData.GNAIncentive) {
+          //soon scenario
+          if (incentive.max === null) {
+              if (userValue >= incentive.min) {
+                  element["Vehicle Incentive % Slabwise GNA"] = incentive.incentive;
+                  
+                  element["Total Vehicle Incentive Amt. Slabwise GNA"] = (userValue * incentive.incentive) / 100;
+                  break;
+              }
+          } else {
+              if (userValue >= incentive.min && userValue <= incentive.max) {
+                  element["Vehicle Incentive % Slabwise GNA"] = incentive.incentive;
+                  element["Total Vehicle Incentive Amt. Slabwise GNA"] = (userValue * incentive.incentive) / 100;
+                  break;
+              }
+          }
+      }
+
+
+  });
   return qualifiedRM;
-};
+}
